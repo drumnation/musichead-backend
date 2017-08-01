@@ -51,7 +51,7 @@ class OmniController < ApplicationController
             spotify_token_expires: auth.credentials.expires,
         })
         @user.save
-        redirect_to 'http://localhost:3001/'
+        redirect_to 'http://musichead.herokuapp.com/'
     end
 
 end
