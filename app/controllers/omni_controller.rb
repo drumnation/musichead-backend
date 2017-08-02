@@ -5,12 +5,11 @@ class OmniController < ApplicationController
 
     def get_spotify_refresh_token
         user = User.find(params[:id])
-        keys = Rails.application.secrets
         response = HTTParty.post("https://accounts.spotify.com/api/token", :body =>{
             grant_type: 'refresh_token',
             refresh_token: user.spotify_refresh_token,
-            client_secret: keys.spotify["client_secret"],
-            client_id: keys.spotify["client_id"],
+            client_secret: ENV["spotify_client_secret"],
+            client_id: ENV["spotify_client_id"],
         })
         puts response.parsed_response["access_token"]
         user.update({spotify_token: response.parsed_response["access_token"]})
