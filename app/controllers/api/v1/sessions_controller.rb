@@ -3,7 +3,7 @@ class Api::V1::SessionsController < ApplicationController
     ALGORITHM = "HS256"
     
     def new
-        user = User.find_by(email: params[:email])
+        user = User.find_or_create_by(email: params[:email])
         if user.present?
             token = JWT.encode({user_id: user.id}, SECRET, ALGORITHM)
             render json: 

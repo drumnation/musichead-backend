@@ -11,12 +11,12 @@ class OmniController < ApplicationController
             client_secret: ENV["spotify_client_secret"],
             client_id: ENV["spotify_client_id"],
         })
-        puts response.parsed_response["access_token"]
         user.update({spotify_token: response.parsed_response["access_token"]})
         if user.save
             render json: user
+        else
+            puts 'Could not get Refresh Token'
         end
-        puts user
     end
     
     # def fb_login
@@ -37,7 +37,9 @@ class OmniController < ApplicationController
         auth_extra = request.env['omniauth.auth'].extra['raw_info']
         @user = User.find_or_create_by(email: auth.info.email)
         @user.update({
+            name: auth.info.name,
             email: auth.info.email,
+            password: 'asx098asx098asx',
             birthdate: auth.info.birthdate,
             image: auth.info.image,
             country_code: auth.info.country_code,
@@ -47,10 +49,14 @@ class OmniController < ApplicationController
             spotify_token: auth.credentials.token,
             spotify_refresh_token: auth.credentials.refresh_token,
             spotify_token_expires_at: auth.credentials.expires_at,
-            spotify_token_expires: auth.credentials.expires,
+            spotify_token_expires: auth.credentials.expires
         })
-        @user.save
-        redirect_to ENV["base_url"] + "user/#{auth.credentials.token}/#{auth.credentials.refresh_token}"
+        if @user.save
+            redirect_to ENV["base_url"] + "user/#{auth.credentials.token}/#{auth.credentials.refresh_token}"
+        else
+            puts "CREATE ERROR"
+            redirect_to ENV["base_url"] + "error"
+        end
     end
 
 end
